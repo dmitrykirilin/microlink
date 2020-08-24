@@ -1,5 +1,6 @@
 package my.project.microlink.controller;
 
+import my.project.microlink.model.Link;
 import my.project.microlink.service.KeyMapperService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/{key}")
@@ -22,7 +24,8 @@ public class RedirectController {
         if (!service.getLink(key).isPresent()) {
             response.setStatus(404);
         }
-        response.setHeader("Location", service.getLink(key).get());
+        Link link = (Link) service.getLink(key).get();
+        response.setHeader("Location", link.getText());
         response.setStatus(302);
     }
 }

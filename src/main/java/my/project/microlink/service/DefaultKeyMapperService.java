@@ -1,5 +1,7 @@
 package my.project.microlink.service;
 
+import my.project.microlink.model.Link;
+import my.project.microlink.model.repository.LinkRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -10,8 +12,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Component
-public class DefaultKeyMapperService implements KeyMapperService{
+public class DefaultKeyMapperService implements KeyMapperService<Link>{
 
+    @Autowired
+    private LinkRepository repository;
+
+    @Autowired
     private KeyConverterService converter;
 
     private long sequence;
@@ -20,23 +26,24 @@ public class DefaultKeyMapperService implements KeyMapperService{
         return (long) (Math.random()*100000000 + 10000000);
     }
 
-    private Map map = new HashMap<Long, String>();
-
-    public void setMap(Map map) {
-        this.map = map;
-    }
-
     @Override
     public String add(String link) {
-        long id = getSequence();
-        String key = converter.idToKey(id);
-        map.put(id, link);
+        String key = null;
+        Optional<Link> linkFromDb = repository.findByText(link);
+        if(linkFromDb.isPresent()){
+            key = converter.idToKey(linkFromDb.get().getId());
+            return key;
+        }
+        Link storageLink = repository.save(new Link(link));
+        key = converter.idToKey(storageLink.getId());
         return key;
     }
 
     @Override
-    public Optional<String> getLink(String key) {
+    public Optional<Link> getLink(String key) {
         long id = converter.keyToId(key);
-        return Optional.ofNullable(String.valueOf(map.get(id)));
+        Optional<Link> linkById = repository.findById(id);
+
+        return linkById;
     }
 }

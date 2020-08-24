@@ -56,6 +56,6 @@ public class DefaultKeyMapperServiceTest {
     @Test
     public void impossibleToTakeLinkByNotExistedKey(){
         assertTrue(service.getLink(KEY).isPresent());
-        service.setMap(new HashMap<String, String>());
+//        service.setMap(new HashMap<String, String>());
     }
 }
