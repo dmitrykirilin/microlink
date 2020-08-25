@@ -25,8 +25,7 @@ import org.springframework.web.context.WebApplicationContext;
 import java.util.HashMap;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = MicrolinkApplication.class)
@@ -72,4 +71,16 @@ public class AddControllerTest {
                     put("key", KEY);
                 }})));
     }
-}
+
+    @Test
+    public void whenUserEnterLinkShouldReturnedResultPage() throws Exception {
+        this.mockMvc.perform(post("/addhtml")
+                .param("link", LINK)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(view().name("result"))
+                .andExpect(model().attribute("link_text", LINK))
+                .andExpect(model().attribute("key", KEY));
+                }
+    }
+
